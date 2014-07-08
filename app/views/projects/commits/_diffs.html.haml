@@ -29,9 +29,9 @@
   - if current_controller?(:commit)
     - unless @commit.has_zero_stats?
       with
-      %strong.cgreen #{@commit.stats.additions} additions
+      %strong.cgreen #{pluralize(@commit.stats.additions, 'addition')}
       and
-      %strong.cred #{@commit.stats.deletions} deletions
+      %strong.cred #{pluralize(@commit.stats.deletions, 'deletion')}
   - elsif @merge_request && @merge_request.persisted?
     - unless @merge_request.has_zero_stats?
       with
