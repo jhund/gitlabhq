@@ -179,8 +179,6 @@ class MergeRequestDiff < ActiveRecord::Base
     merge_request.target_project.repository
   end
 
-  private
-
   def compare_action
     Gitlab::Satellite::CompareAction.new(
       merge_request.author,
