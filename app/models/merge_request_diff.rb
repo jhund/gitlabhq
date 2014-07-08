@@ -18,6 +18,8 @@ class MergeRequestDiff < ActiveRecord::Base
   # if commits amount more then 200
   COMMITS_SAFE_SIZE = 200
 
+  DiffStats = Struct.new(:additions, :deletions, :total)
+
   attr_reader :commits, :diffs
 
   belongs_to :merge_request
@@ -58,6 +60,17 @@ class MergeRequestDiff < ActiveRecord::Base
 
   def last_commit_short_sha
     @last_commit_short_sha ||= last_commit.sha[0..10]
+  end
+
+  # Returns a DiffStats object with #additions, #deletions, and #total counts
+  def stats
+    @stats ||= compute_stats
+  end
+
+  def has_zero_stats?
+    stats.total.zero?
+  rescue
+    true
   end
 
   private
@@ -177,4 +190,27 @@ class MergeRequestDiff < ActiveRecord::Base
       merge_request.source_branch
     )
   end
+
+  # Computes diff stats for this merge request
+  def compute_stats
+    s = Hash.new(0)
+    diffs.each do |diff|
+      # yields a Gitlab::Git::Diff instance
+      diff.diff.split("\n").each do |diff_line|
+        case diff_line
+        when /\A(\-\-\-|\+\+\+|\@\@) /
+          # skip header info, nothing to do
+        when /\A\+/
+          s[:additions] += 1
+        when /\A\-/
+          s[:deletions] += 1
+        else
+          # unmodified lines, nothing to do
+        end
+      end
+    end
+    s[:total] = s[:additions] + s[:deletions]
+    DiffStats.new(s[:additions], s[:deletions], s[:total])
+  end
+
 end

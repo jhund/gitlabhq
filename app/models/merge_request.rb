@@ -34,7 +34,8 @@ class MergeRequest < ActiveRecord::Base
   after_create :create_merge_request_diff
   after_update :update_merge_request_diff
 
-  delegate :commits, :diffs, :last_commit, :last_commit_short_sha, to: :merge_request_diff, prefix: nil
+  delegate :commits, :stats, :diffs, :has_zero_stats?, :last_commit,
+           :last_commit_short_sha, to: :merge_request_diff, prefix: nil
 
   attr_accessible :title, :assignee_id, :source_project_id, :source_branch,
                   :target_project_id, :target_branch, :milestone_id,

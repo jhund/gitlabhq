@@ -32,6 +32,13 @@
       %strong.cgreen #{@commit.stats.additions} additions
       and
       %strong.cred #{@commit.stats.deletions} deletions
+  - elsif @merge_request && @merge_request.persisted?
+    - unless @merge_request.has_zero_stats?
+      with
+      %strong.cgreen #{pluralize(@merge_request.stats.additions, 'addition')}
+      and
+      %strong.cred #{pluralize(@merge_request.stats.deletions, 'deletion')}
+
   - if params[:view] == 'parallel'
     = link_to "Inline Diff", url_for(view: 'inline'), {id: "commit-diff-viewtype", class: 'btn btn-tiny pull-right'}
   - else

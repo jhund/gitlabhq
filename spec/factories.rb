@@ -150,6 +150,12 @@ FactoryGirl.define do
     trait :with_diffs do
     end
 
+    trait :without_diffs do
+      # revert source and target_branch from simple for zero diffs
+      target_branch "simple_merge_request"
+      source_branch "master"
+    end
+
     trait :closed do
       state :closed
     end
@@ -165,7 +171,9 @@ FactoryGirl.define do
 
     factory :closed_merge_request, traits: [:closed]
     factory :reopened_merge_request, traits: [:reopened]
+    factory :simple_merge_request, traits: [:simple]
     factory :merge_request_with_diffs, traits: [:with_diffs]
+    factory :merge_request_without_diffs, traits: [:without_diffs]
   end
 
   factory :note do
@@ -245,7 +253,7 @@ FactoryGirl.define do
       end
     end
   end
-  
+
   factory :email do
     user
     email do
